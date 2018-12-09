@@ -1,0 +1,75 @@
+<html>
+    <head>
+        <title>NodeJS & Jquery Bot Yapımı</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+        <script>
+            $(() => {
+    
+                const socket = io.connect('http://localhost:3000', {
+                    reconnectionAttempts: 2,
+                    reconnectionDelay: 4000,
+                    // reconnection: false
+                });
+    
+                socket.on('reconnect_attempt', () => {
+                    $('.reconnnectStatus').html('Yeniden bağlanmaya çalışılıyor.');
+                });
+    
+                socket.on('reconnect_error', () => {
+                    setTimeout(() => {
+                        $('.reconnnectStatus').html('Yeniden bağlanma başarısız.');
+                    },1500);
+                });
+    
+                socket.on('reconnect', () => {
+                    $('.reconnnectStatus').html('Yeniden bağlanma başarılı.');
+                });
+    
+         //***************************BAĞLANDIKTAN SONRA*********************************************************************************
+                //socket.emit('botabasla');
+                
+                    
+                $('button#n11fiyatal').on('click', () => {
+                    var n11urunurl = $("#n11urun").val();
+                    socket.emit('n11fiyatal', { n11urunurl: n11urunurl });
+                });
+
+                socket.on('n11fiyatver', (data) => {
+                    $('#n11urunfiyati').append('n11 Ürün fiyatı : ' +  data.fiyat + '<br>');
+                });
+
+                // Sahibinden 
+                $('button#sahibindenilanal').on('click', () => {
+                    var sahibindenurl = $("#sahibindenurl").val();
+                    socket.emit('sahibindenilanal', { sahibindenurl: sahibindenurl });
+                });
+
+                socket.on('sahibindenlistever', (data) => {
+                    $('#sahibindenilanlar').append('Sahibinden Ilanlar : ' +  data.veri + '<br>');
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <div style="width:600px;margin:50px auto;text-align:center;">
+            <h1>NodeJS & Socketio & Jquery Bot Yapımı</h1>
+            <div style="margin-bottom:30px;">
+                <div>Örnek n11 ürün Url: <span style="font-size:11px">https://urun.n11.com/erkek-bot/greyder-66984-hakiki-deri-suet-deri-erkek-bot-P299405857?recId=jpgnc181-89b7qft709v-S.W_DET_OTHER_STORE.C.c173_a319-0y40xti</span></div>
+                <input type="text" id="n11urun" value="" style="height:40px; width:300px;" placeholder="N11 Ürün Url yolunu giriniz">
+                <button id="n11fiyatal">N11 Fiyat Al</button>
+                <div id="n11urunfiyati" sttyle="color:red"></div>
+            </div>
+
+            <div>
+                    <div>Örnek Sahibinden Url: <span style="font-size:11px">https://www.sahibinden.com/mini</span></div>
+                    <input type="text" id="sahibindenurl" value="" style="height:40px; width:300px;" placeholder="Sahibinden Url yolunu giriniz">
+                    <button id="sahibindenilanal">Sahibinden Ilanlari Al</button>
+                    <div id="sahibindenilanlar" sttyle="color:red"></div>
+            </div>
+    
+                
+        </div>
+        
+    </body>
+</html>
